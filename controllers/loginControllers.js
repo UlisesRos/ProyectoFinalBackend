@@ -90,7 +90,7 @@ module.exports = {
                 
                 req.session.persona = user;
                 if(req.body.remember) { //Mantener la session iniciada
-                    res.cookie("sessionDelUsuario", req.session.persona, {maxAge: 150000})
+                    res.cookie("sessionDelUsuario", req.session.persona, {maxAge: 60000 * 60 * 24 * 30})
                 };
                 res.json({msg: "Usuario Logeado"})
             } else {

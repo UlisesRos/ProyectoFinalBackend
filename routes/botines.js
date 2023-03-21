@@ -13,9 +13,11 @@ const { check } = require('express-validator');
 
 //Routers
 router.get('/saludo', botinesControllers.saludo);
+//AxiosClima
+router.get('/consultaClima', botinesControllers.consultaClima)
 
 router.get('/listaBotines', botinesControllers.lista);
-router.get('/listaID/:id', botinesControllers.listaID);
+router.get('/listaID/:id',validarID, botinesControllers.listaID);
 router.get('/buscarBotin/:modelo', validarModelo, botinesControllers.buscarBotin);
 
 //CRUD

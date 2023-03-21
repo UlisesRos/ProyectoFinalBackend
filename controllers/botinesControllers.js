@@ -2,6 +2,18 @@ const { Botin } = require('../models/botinesProd');
 
 //Express Validator
 const { validationResult } = require('express-validator')
+//AXIOS
+const axios = require('axios')
+
+const options = {
+    method: 'GET',
+    url: 'https://weatherbit-v1-mashape.p.rapidapi.com/forecast/3hourly',
+    params: {lat: '-32.94682', lon: '-60.63932'},
+    headers: {
+        'X-RapidAPI-Key': 'a6f134be2emsh99cd0edd8c3ac2ap14d5c0jsn12c993266b0c',
+        'X-RapidAPI-Host': 'weatherbit-v1-mashape.p.rapidapi.com'
+    }
+};
 
 module.exports = {
 
@@ -64,6 +76,18 @@ module.exports = {
     async eliminarBotines ( req, res ){
         await Botin.findByIdAndDelete(req.params.id);
         res.json({msg: `El producto ${req.params.id} ha sido eliminado correctamente`})
+    },
+
+    //AXIOS
+
+    async consultaClima ( req, res ){
+        
+        try {
+            const respuesta = await axios.request(options);
+            res.status(200).json({data: respuesta.data, status: respuesta.status});
+        } catch (error) {
+            res.json({status: error.response.status, data: error.response.data})
+        }
     }
 
 }
