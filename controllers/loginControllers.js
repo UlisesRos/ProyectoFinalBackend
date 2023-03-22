@@ -4,32 +4,14 @@ const {User} = require('../models/user')
 const { validationResult } = require('express-validator');
 //BCRYPT
 const bcrypt = require('bcryptjs');
+//JWT
+const generadorJWT = require('../helpers/generadorJWT')
 
 module.exports = {
 
     //Bienvenida al Login
     bienvenida ( req, res ){
         res.status(200).send('¡Bienvenidos a Botines Con Gol!')
-    },
-
-    //SESSION
-    crearSession ( req, res ){
-        const persona = {
-            nombre: "Ulises",
-            idioma: "Español"
-        };
-        console.log(req.session);
-        req.session.persona = persona //Crea la Session.
-        res.json(req.session.persona)
-    },
-    pruebaSession ( req, res ){
-        console.log(req.cookies.sessionDelUsuario)
-        res.json(req.session.persona)
-    },
-
-    eliminarSession (req, res){
-        req.session.destroy(); //Cierra la session
-        res.json({msg: 'session cerrada'})
     },
 
      //REGISTRARSE
@@ -68,8 +50,18 @@ module.exports = {
         res.json({msg: `El usuario con id: ${req.params.id} ha sido eliminado con exito.`})
     },
 
-    //LOGIN
-    async login ( req, res ){
+    //TOKEN
+
+    async pruebaToken ( req, res ){
+        const token = await generadorJWT(req.body)
+        res.json(token)
+    },
+    testToken ( req, res){
+        res.send('Paso el token')
+    },
+
+    //LOGIN TOKEN
+    async loginToken ( req, res ){
         try {
             const err = validationResult(req);
             if (err.isEmpty()) {
@@ -78,33 +70,22 @@ module.exports = {
                     res.json({msg: 'El email o la contraseña son incorrectos'});
                     return
                 };
-                if (!bcrypt.compareSync(req.body.password, usuario.password)) {
+                if (!bcrypt.compareSync(req.body.password, usuario.password)) { //Valida el Password
                     res.json({msg: "El email o la contraseña son incorrectos"});
                     return
                 };
 
-                const user = {
-                    _id: usuario._id,
-                    name: usuario.name
-                }
-                
-                req.session.persona = user;
-                if(req.body.remember) { //Mantener la session iniciada
-                    res.cookie("sessionDelUsuario", req.session.persona, {maxAge: 60000 * 60 * 24 * 30})
-                };
-                res.json({msg: "Usuario Logeado"})
+                const token = await generadorJWT({
+                    id: usuario._id,
+                    email: usuario.email
+                });
+
+                res.json({ msg: "Usuario Logeado", token: token})
             } else {
                 res.status(501).json(err)
             }
         } catch (error) {
             res.status(501).json(error)
         }
-    },
-
-    //LOGOUT
-    logout ( req, res ){
-        res.clearCookie("sessionDelUsuario");
-        req.session.destroy();
-        res.json({msg: "Usuario Deslogeado"})
-    },
+    }
 }

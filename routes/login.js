@@ -6,7 +6,8 @@ const loginControllers = require('../controllers/loginControllers');
 //Express Validator
 const { check } = require('express-validator');
 //Middleware
-const auth = require('../middleware/auth')
+const auth = require('../middleware/auth');
+const validarToken = require('../middleware/validarToken');
 
 
 //Routers
@@ -21,19 +22,15 @@ router.get('/usuariosList', loginControllers.usuariosList);
 //Eliminar Usuario
 router.delete('/eliminarUsuario/:id', loginControllers.eliminarUsuario);
 
-//Session
-router.get('/session', loginControllers.crearSession);
-router.get('/pruebaSession',auth, loginControllers.pruebaSession)
-router.get('/cerrar', loginControllers.eliminarSession);
+//PruebaToken
+router.post('/pruebaToken', loginControllers.pruebaToken);
+router.get('/testToken',validarToken, loginControllers.testToken)
 
-//Login
-router.post('/login',[
+//LoginToken
+router.post('/loginToken',[
     check('email').not().isEmpty().withMessage('el campo email es obligatorio'),
     check('password').not().isEmpty().withMessage('el campo password es obligatorio')
-], loginControllers.login);
-
-//Logout
-router.delete('/logout', loginControllers.logout);
+], loginControllers.loginToken);
 
 
 module.exports = router

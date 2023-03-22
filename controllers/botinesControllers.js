@@ -5,6 +5,7 @@ const { validationResult } = require('express-validator')
 //AXIOS
 const axios = require('axios')
 
+//Objeto para conectar la API del clima de la ciudad de Rosario
 const options = {
     method: 'GET',
     url: 'https://weatherbit-v1-mashape.p.rapidapi.com/forecast/3hourly',
@@ -80,6 +81,7 @@ module.exports = {
 
     //AXIOS
 
+    //Consulta a la API del clima de la ciudad de Rosario
     async consultaClima ( req, res ){
         
         try {
